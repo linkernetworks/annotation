@@ -17,13 +17,15 @@ func TestVOCXML(t *testing.T) {
 		},
 		Segmented: 0,
 		Objects: []Object{
-			Name:     "",
-			Diffcult: 0,
-			BoundingBox: BoundBox{
-				Xmin: 120,
-				Xmax: 133,
-				Ymin: 211,
-				Ymax: 255,
+			Object{
+				Name:     "",
+				Diffcult: 0,
+				BoundingBox: BoundBox{
+					Xmin: 120,
+					Xmax: 133,
+					Ymin: 211,
+					Ymax: 255,
+				},
 			},
 		},
 	}
