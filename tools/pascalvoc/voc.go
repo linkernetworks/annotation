@@ -78,25 +78,43 @@ func (v *Voc) AddImage(file string, annots annotation.AnnotationCollection, imag
 	//FIXME Hardcode the label name to BTS for demo.
 	rects := annots.RectAnnotations()
 	imgRec := image.Bounds()
-
+	XBoundary := imgRec.Max.X - imgRec.Min.X
+	YBoundary := imgRec.Max.Y - imgRec.Min.Y
 	var objs []Object
+
 	for _, rect := range rects {
+		var xMaxValue, yMaxValue int
+		// if the rect max value is greater than image width.
+		// it shoud be given the image width
+		if (rect.X + rect.Width) > XBoundary {
+			xMaxValue = XBoundary
+		} else {
+			xMaxValue = rect.X + rect.Width
+		}
+		// if the rect max value is greater than image height.
+		// it shoud be given the image height
+		if (rect.Y + rect.Height) > YBoundary {
+			xMaxValue = YBoundary
+		} else {
+			yMaxValue = rect.Y + rect.Height
+		}
+
 		obj := Object{
 			Name:     rect.Label,
 			Diffcult: 0,
 			BoundingBox: BoundBox{
 				Xmin: rect.X,
-				Xmax: rect.X + rect.Width,
+				Xmax: xMaxValue,
 				Ymin: rect.Y,
-				Ymax: rect.Y + rect.Height,
+				Ymax: yMaxValue,
 			}}
 		objs = append(objs, obj)
 	}
 	v.Data = VocAnnotation{
 		FileName: file,
 		ImageSize: Size{
-			Height: imgRec.Max.Y - imgRec.Min.Y,
-			Width:  imgRec.Max.X - imgRec.Min.X,
+			Height: YBoundary,
+			Width:  XBoundary,
 			Depth:  0,
 		},
 		Segmented: 0,
