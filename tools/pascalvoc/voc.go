@@ -1,11 +1,9 @@
 package pascalvoc
 
 import (
+	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
 	"encoding/xml"
 	"image"
-	"os"
-
-	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
 )
 
 /*
@@ -65,56 +63,35 @@ type Voc struct {
 	Data VocAnnotation `xml:"annotation"`
 }
 
-//PrintVoc : Just print pascal data to stdout
-//Just command line call it and pipe to file
-func (*Voc) PrintVoc(a VocAnnotation) {
-	enc2 := xml.NewEncoder(os.Stdout)
-	enc2.Indent("  ", "    ")
-	enc2.Encode(a)
-}
-
-//AddImage -
+//AddImage addes the annotation object
 func (v *Voc) AddImage(file string, annots annotation.AnnotationCollection, image image.Image) {
-	//FIXME Hardcode the label name to BTS for demo.
 	rects := annots.RectAnnotations()
 	imgRec := image.Bounds()
-	XBoundary := imgRec.Max.X - imgRec.Min.X
-	YBoundary := imgRec.Max.Y - imgRec.Min.Y
+
+	imgWidth := imgRec.Max.X - imgRec.Min.X
+	imgHeight := imgRec.Max.Y - imgRec.Min.Y
 	var objs []Object
 
 	for _, rect := range rects {
-		var xMaxValue, yMaxValue int
-		// if the rect max value is greater than image width.
-		// it shoud be given the image width
-		if (rect.X + rect.Width) > XBoundary {
-			xMaxValue = XBoundary
-		} else {
-			xMaxValue = rect.X + rect.Width
-		}
 		// if the rect max value is greater than image height.
 		// it shoud be given the image height
-		if (rect.Y + rect.Height) > YBoundary {
-			xMaxValue = YBoundary
-		} else {
-			yMaxValue = rect.Y + rect.Height
-		}
-
 		obj := Object{
 			Name:     rect.Label,
 			Diffcult: 0,
 			BoundingBox: BoundBox{
-				Xmin: rect.X,
-				Xmax: xMaxValue,
-				Ymin: rect.Y,
-				Ymax: yMaxValue,
+				Xmin: max(rect.X, 0),
+				Xmax: min(rect.X+rect.Width, imgWidth),
+				Ymin: max(rect.Y, 0),
+				Ymax: min(rect.Y+rect.Height, imgHeight),
 			}}
 		objs = append(objs, obj)
 	}
+
 	v.Data = VocAnnotation{
 		FileName: file,
 		ImageSize: Size{
-			Height: YBoundary,
-			Width:  XBoundary,
+			Width:  imgWidth,
+			Height: imgHeight,
 			Depth:  0,
 		},
 		Segmented: 0,

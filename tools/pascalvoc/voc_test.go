@@ -1,7 +1,6 @@
 package pascalvoc
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -33,5 +32,5 @@ func TestVOCXML(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println(string(out))
+	t.Log(string(out))
 }
