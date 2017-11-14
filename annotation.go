@@ -5,14 +5,14 @@ import "strconv"
 import "math"
 import "image"
 
-func min(a, b int) int {
+func Min(a, b int) int {
 	if a < b {
 		return a
 	}
 	return b
 }
 
-func max(a, b int) int {
+func Max(a, b int) int {
 	if a > b {
 		return a
 	}
@@ -80,18 +80,18 @@ func FindPointAnnotationRect(label string, annots AnnotationCollection, padding 
 		if annot.Point == nil {
 			continue
 		}
-		minx = min(minx, annot.Point.X)
-		miny = min(minx, annot.Point.Y)
+		minx = Min(minx, annot.Point.X)
+		miny = Min(minx, annot.Point.Y)
 
-		maxx = max(maxx, annot.Point.X)
-		maxy = max(maxy, annot.Point.Y)
+		maxx = Max(maxx, annot.Point.X)
+		maxy = Max(maxy, annot.Point.Y)
 	}
 	return RectAnnotation{
 		Label:  label,
-		X:      max(minx-padding, 0),
-		Y:      max(miny-padding, 0),
-		Width:  min(maxx-minx+padding, bounds.Max.X),
-		Height: min(maxy-miny+padding, bounds.Max.Y),
+		X:      Max(minx-padding, 0),
+		Y:      Max(miny-padding, 0),
+		Width:  Min(maxx-minx+padding, bounds.Max.X),
+		Height: Min(maxy-miny+padding, bounds.Max.Y),
 	}
 }
 

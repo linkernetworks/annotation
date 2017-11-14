@@ -1,9 +1,10 @@
 package pascalvoc
 
 import (
-	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
 	"encoding/xml"
 	"image"
+
+	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
 )
 
 /*
@@ -79,10 +80,10 @@ func (v *Voc) AddImage(file string, annots annotation.AnnotationCollection, imag
 			Name:     rect.Label,
 			Diffcult: 0,
 			BoundingBox: BoundBox{
-				Xmin: max(rect.X, 0),
-				Xmax: min(rect.X+rect.Width, imgWidth),
-				Ymin: max(rect.Y, 0),
-				Ymax: min(rect.Y+rect.Height, imgHeight),
+				Xmin: annotation.Max(rect.X, 0),
+				Xmax: annotation.Min(rect.X+rect.Width, imgWidth),
+				Ymin: annotation.Max(rect.Y, 0),
+				Ymax: annotation.Min(rect.Y+rect.Height, imgHeight),
 			}}
 		objs = append(objs, obj)
 	}
