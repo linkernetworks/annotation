@@ -27,10 +27,10 @@ type PointAnnotation struct {
 
 type RectAnnotation struct {
 	Label  string `bson:"label" json:"label"`
-	X      int    `bson:"x" json:"x"`
-	Y      int    `bson:"y" json:"y"`
-	Width  int    `bson:"width" json:"width"`
-	Height int    `bson:"height" json:"height"`
+	X      int    `bson:"x" json:"x,omitempty"`
+	Y      int    `bson:"y" json:"y,omitempty"`
+	Width  int    `bson:"width" json:"width,omitempty"`
+	Height int    `bson:"height" json:"height,omitempty"`
 }
 
 func (ra *RectAnnotation) Rectangle() image.Rectangle {
