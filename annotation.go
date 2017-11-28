@@ -19,26 +19,6 @@ func Max(a, b int) int {
 	return b
 }
 
-type PointAnnotation struct {
-	Label string `bson:"label" json:"label"`
-	X     int    `bson:"x" json:"x"`
-	Y     int    `bson:"y" json:"y"`
-}
-
-type RectAnnotation struct {
-	Label  string `bson:"label" json:"label"`
-	X      int    `bson:"x" json:"x"`
-	Y      int    `bson:"y" json:"y"`
-	Width  int    `bson:"width" json:"width"`
-	Height int    `bson:"height" json:"height"`
-}
-
-func (ra *RectAnnotation) Rectangle() image.Rectangle {
-	min := image.Point{ra.X, ra.Y}
-	max := image.Point{ra.X + ra.Width, ra.Y + ra.Height}
-	return image.Rectangle{Min: min, Max: max}
-}
-
 type Annotation struct {
 	Id   int    `bson:"id" json:"id"`
 	Type string `bson:"type" json:"type"`
@@ -111,22 +91,4 @@ func PointToAnnotation(points []pts.Point) []Annotation {
 		index++
 	}
 	return annotations
-}
-
-func AnyRectAnnotation(annots []Annotation) bool {
-	for _, a := range annots {
-		if a.Rect != nil {
-			return true
-		}
-	}
-	return false
-}
-
-func AnyPointAnnotation(annots []Annotation) bool {
-	for _, annot := range annots {
-		if annot.Point != nil {
-			return true
-		}
-	}
-	return false
 }
