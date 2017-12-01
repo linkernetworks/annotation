@@ -1,10 +1,10 @@
 package pascalvoc
 
 import (
+	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
 	"encoding/xml"
 	"image"
-
-	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
+	"io"
 )
 
 /*
@@ -29,8 +29,15 @@ import (
 </annotation>
 */
 
+//Voc -
+type Voc struct {
+	Data VocAnnotation
+	size image.Point `xml:-`
+}
+
 //VocAnnotation - Pascal VOC for annotation
 type VocAnnotation struct {
+	XMLName   string   `xml:"annotation"`
 	FileName  string   `xml:"filename"`
 	ImageSize Size     `xml:"size"`
 	Segmented int      `xml:"segmented"`
@@ -59,49 +66,91 @@ type BoundBox struct {
 	Ymax int `xml:"ymax"`
 }
 
-//Voc -
-type Voc struct {
-	Data VocAnnotation `xml:"annotation"`
+func NewVocXml(filename string, width int, height int, depth int) *Voc {
+	return &Voc{
+		size: image.Point{X: width, Y: height},
+		Data: VocAnnotation{
+			FileName:  filename,
+			Segmented: 0,
+			ImageSize: Size{
+				Width:  width,
+				Height: height,
+				Depth:  depth,
+			},
+		},
+	}
 }
 
-//AddImage addes the annotation object
-func (v *Voc) AddImage(file string, annots annotation.AnnotationCollection, image image.Image) {
-	rects := annots.RectAnnotations()
-	imgRec := image.Bounds()
+func RectAnnotationToObject(rect annotation.RectAnnotation) Object {
+	return Object{
+		Name:     rect.Label,
+		Diffcult: 0,
+		BoundingBox: BoundBox{
+			Xmin: rect.X,
+			Xmax: rect.X + rect.Width,
+			Ymin: rect.Y,
+			Ymax: rect.Y + rect.Height,
+		},
+	}
+}
 
-	imgWidth := imgRec.Max.X - imgRec.Min.X
-	imgHeight := imgRec.Max.Y - imgRec.Min.Y
-	var objs []Object
+func (v *Voc) RectAnnotations() []annotation.RectAnnotation {
+	var rects []annotation.RectAnnotation
+	for _, obj := range v.Data.Objects {
+		var rect = annotation.RectAnnotation{
+			Label:  obj.Name,
+			X:      obj.BoundingBox.Xmin,
+			Y:      obj.BoundingBox.Ymin,
+			Width:  obj.BoundingBox.Xmax - obj.BoundingBox.Xmin,
+			Height: obj.BoundingBox.Ymax - obj.BoundingBox.Ymin,
+		}
+		rects = append(rects, rect.Canon())
+	}
+	return rects
+}
 
+func (v *Voc) AnnotationCollection() annotation.AnnotationCollection {
+	var annots []annotation.Annotation
+	var rects = v.RectAnnotations()
+	for idx, rect := range rects {
+		var r = rect.Canon()
+		annots = append(annots, annotation.Annotation{
+			Id:   idx,
+			Type: "rect",
+			Rect: &r,
+		})
+	}
+	return annots
+}
+
+func (v *Voc) AddObject(o Object) {
+	v.Data.Objects = append(v.Data.Objects, o)
+}
+
+func (v *Voc) AddRectAnnotation(rect annotation.RectAnnotation) {
+	var obj = RectAnnotationToObject(rect.FixBounds(v.size).Canon())
+	v.AddObject(obj)
+}
+
+// AddObject addes the object from annotation collections
+func (v *Voc) AddAnnotations(rects []annotation.RectAnnotation) {
 	for _, rect := range rects {
 		// if the rect max value is greater than image height.
 		// it shoud be given the image height
-		obj := Object{
-			Name:     rect.Label,
-			Diffcult: 0,
-			BoundingBox: BoundBox{
-				Xmin: annotation.Max(rect.X, 0),
-				Xmax: annotation.Min(rect.X+rect.Width, imgWidth),
-				Ymin: annotation.Max(rect.Y, 0),
-				Ymax: annotation.Min(rect.Y+rect.Height, imgHeight),
-			}}
-		objs = append(objs, obj)
+		var obj = RectAnnotationToObject(rect.FixBounds(v.size).Canon())
+		v.AddObject(obj)
 	}
+}
 
-	v.Data = VocAnnotation{
-		FileName: file,
-		ImageSize: Size{
-			Width:  imgWidth,
-			Height: imgHeight,
-			Depth:  0,
-		},
-		Segmented: 0,
-		Objects:   objs,
-	}
+func Parse(reader io.Reader) (*Voc, error) {
+	var voc Voc
+	var decoder = xml.NewDecoder(reader)
+	var err = decoder.Decode(&voc.Data)
+	voc.size = image.Point{X: voc.Data.ImageSize.Width, Y: voc.Data.ImageSize.Height}
+	return &voc, err
 }
 
 //XML -
 func (v *Voc) XML() ([]byte, error) {
-	return xml.MarshalIndent(v.Data, "  ", " ")
-
+	return xml.MarshalIndent(v.Data, "", "  ")
 }
