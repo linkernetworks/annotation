@@ -1,13 +1,13 @@
 package dlibutils
 
 import (
-	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
+	"bitbucket.org/linkernetworks/aurora/src/annotation"
 	"encoding/xml"
 	"image"
 	"strconv"
 )
 
-// import "bitbucket.org/linkernetworks/cv-tracker/server/parser/pts"
+// import "bitbucket.org/linkernetworks/aurora/server/parser/pts"
 
 type Dataset struct {
 	XMLName xml.Name `xml:"dataset"`

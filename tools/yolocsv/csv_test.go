@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"bitbucket.org/linkernetworks/cv-tracker/src/annotation"
+	"bitbucket.org/linkernetworks/aurora/src/annotation"
 )
 
 func TestYoloCSV(t *testing.T) {

@@ -1,6 +1,6 @@
 package annotation
 
-import "bitbucket.org/linkernetworks/cv-tracker/server/parser/pts"
+import "bitbucket.org/linkernetworks/aurora/server/parser/pts"
 import "strconv"
 import "math"
 import "image"
