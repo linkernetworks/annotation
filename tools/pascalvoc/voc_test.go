@@ -2,8 +2,9 @@ package pascalvoc
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParse(t *testing.T) {
@@ -17,7 +18,7 @@ func TestParse(t *testing.T) {
   <segmented>0</segmented>
   <object>
     <name>car</name>
-    <diffcult>0</diffcult>
+    <difficult>0</difficult>
     <bndbox>
       <xmin>120</xmin>
       <ymin>211</ymin>
@@ -37,8 +38,8 @@ func TestParse(t *testing.T) {
 func TestVOCXML(t *testing.T) {
 	v := NewVocXml("test1.jpg", 480, 360, 16)
 	v.AddObject(Object{
-		Name:     "car",
-		Diffcult: 0,
+		Name:      "car",
+		Difficult: 0,
 		BoundingBox: BoundBox{
 			Xmin: 120,
 			Xmax: 133,
@@ -61,7 +62,7 @@ func TestVOCXML(t *testing.T) {
   <segmented>0</segmented>
   <object>
     <name>car</name>
-    <diffcult>0</diffcult>
+    <difficult>0</difficult>
     <bndbox>
       <xmin>120</xmin>
       <ymin>211</ymin>

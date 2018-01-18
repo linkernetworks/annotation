@@ -1,10 +1,11 @@
 package pascalvoc
 
 import (
-	"bitbucket.org/linkernetworks/aurora/src/annotation"
 	"encoding/xml"
 	"image"
 	"io"
+
+	"bitbucket.org/linkernetworks/aurora/src/annotation"
 )
 
 /*
@@ -18,7 +19,7 @@ import (
   <segmented>0</segmented>
   <object>
     <name>car</name>
-    <diffcult>0</diffcult>
+    <difficult>0</difficult>
     <bndbox>
       <xmin>0</xmin>
       <ymin>0</ymin>
@@ -54,7 +55,7 @@ type Size struct {
 //Object -
 type Object struct {
 	Name        string   `xml:"name"`
-	Diffcult    int      `xml:"diffcult"`
+	Difficult   int      `xml:"difficult"`
 	BoundingBox BoundBox `xml:"bndbox"`
 }
 
@@ -83,8 +84,8 @@ func NewVocXml(filename string, width int, height int, depth int) *Voc {
 
 func RectAnnotationToObject(rect annotation.RectAnnotation) Object {
 	return Object{
-		Name:     rect.Label,
-		Diffcult: 0,
+		Name:      rect.Label,
+		Difficult: 0,
 		BoundingBox: BoundBox{
 			Xmin: rect.X,
 			Xmax: rect.X + rect.Width,
