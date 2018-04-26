@@ -8,8 +8,6 @@ import (
 	"github.com/linkernetworks/annotation"
 )
 
-// import "bitbucket.org/linkernetworks/aurora/server/parser/pts"
-
 type Dataset struct {
 	XMLName xml.Name `xml:"dataset"`
 	Name    string   `xml:"Name"`

@@ -1,6 +1,6 @@
 package annotation
 
-import "bitbucket.org/linkernetworks/aurora/server/parser/pts"
+import "github.com/linkernetworks/annotation/parser/pts"
 import "strconv"
 import "math"
 import "image"
