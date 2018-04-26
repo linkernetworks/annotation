@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"image"
 
-	"bitbucket.org/linkernetworks/aurora/src/annotation"
+	"github.com/linkernetworks/annotation"
 )
 
 //YoloCSV -

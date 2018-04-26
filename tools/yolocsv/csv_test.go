@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"bitbucket.org/linkernetworks/aurora/src/annotation"
+	"github.com/linkernetworks/annotation"
 )
 
 func TestYoloCSV(t *testing.T) {
@@ -52,7 +52,7 @@ func TestAnnotationCSV(t *testing.T) {
 	annCols = append(annCols, ann1)
 	annCols = append(annCols, ann2)
 
-	reader, err := os.Open("../../../../tests/fixtures/lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg")
+	reader, err := os.Open("../../test_img/Aaron_Eckhart_0001.jpg")
 	if err != nil {
 		log.Fatal(err)
 	}

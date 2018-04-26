@@ -1,10 +1,11 @@
 package dlibutils
 
 import (
-	"bitbucket.org/linkernetworks/aurora/src/annotation"
 	"encoding/xml"
 	"image"
 	"strconv"
+
+	"github.com/linkernetworks/annotation"
 )
 
 // import "bitbucket.org/linkernetworks/aurora/server/parser/pts"
