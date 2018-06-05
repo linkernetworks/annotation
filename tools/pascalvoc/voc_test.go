@@ -114,10 +114,10 @@ func TestBIG5VOCXML(t *testing.T) {
   </object>
 </annotation>`
 
-	t.Log(string(out))
+	// t.Log(string(out))
 	assert.Equal(t, expectedXml, string(out))
 
-	t.Log(string(out))
+	// t.Log(string(out))
 
 	response, err := json.Marshal(FileContent{
 		Name:    "sss",
@@ -131,9 +131,8 @@ func TestBIG5VOCXML(t *testing.T) {
 	fs := FileContent{}
 	json.Unmarshal(response, &fs)
 
-	t.Log("fs:", string(fs.Content))
-
-	t.Error("---------")
+	// t.Log("fs:", string(fs.Content))
+	assert.Equal(t, expectedXml, string(fs.Content))
 }
 
 type FileContent struct {
