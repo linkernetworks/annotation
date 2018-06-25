@@ -12,6 +12,7 @@ type Annotation struct {
 	// Exclusive fields
 	Rect  *RectAnnotation  `bson:"rect,omitempty" json:"rect,omitempty"`
 	Point *PointAnnotation `bson:"point,omitempty" json:"point,omitempty"`
+	Polygon *PolygibAnnotation `bson:"polygon,omitempty" json:"polygon,omitempty"`
 }
 
 type AnnotationCollection []Annotation
