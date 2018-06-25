@@ -68,3 +68,12 @@ func TestAnyPointAnnotationInvalid(t *testing.T) {
 	notFound := AnyPointAnnotation(annots)
 	assert.False(t, notFound, "Annotation has no point")
 }
+
+func TestAnyPolygonAnnotationInVaild(t *testing.T) {
+	annots := []Annotation{}
+
+	// generate a annotation with no rect should return false
+	annots = append(annots, Annotation{})
+	notFound := AnyPolygonAnnotation(annots)
+	assert.False(t, notFound, "Annotation has no polygon")
+}
