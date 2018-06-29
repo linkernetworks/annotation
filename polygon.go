@@ -1,6 +1,6 @@
 package annotation
 
-type Point float64
+type Point int
 
 type PolygonAnnotation struct {
 	Label  string  `bson:"label" json:"label"`
@@ -9,7 +9,7 @@ type PolygonAnnotation struct {
 
 func AnyPolygonAnnotation(annots []Annotation) bool {
 	for _, annot := range annots {
-		if annot.Polygon != nil && len(annot.Polygon.Points) >0 {
+		if annot.Polygon != nil && len(annot.Polygon.Points) > 0 {
 			return true
 		}
 	}
