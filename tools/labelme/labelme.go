@@ -23,18 +23,6 @@ type Shape struct {
 
 type Point [2]int
 
-func NewLabelME(imgPath string, imgData []byte) *LabelmeJSON {
-	return &LabelmeJSON{
-		ImagePath: imgPath,
-		ImageData: string(imgData),
-	}
-}
-
-func (l *LabelmeJSON) UpdateColor(lineColor [4]int, fillColor [4]int) {
-	l.LineColor = lineColor
-	l.FillColor = fillColor
-}
-
 func (l *LabelmeJSON) AddShape(s Shape) {
 	l.Shapes = append(l.Shapes, s)
 }

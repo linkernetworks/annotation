@@ -47,8 +47,13 @@ func TestLabelMe(t *testing.T) {
 		"imageData": "deadbeaf"
 	  }`
 
-	l := NewLabelME("../pictures/60168783_p0.png", []byte("deadbeaf"))
-	l.UpdateColor([4]int{0, 255, 0, 128}, [4]int{255, 0, 0, 128})
+	l := &LabelmeJSON{
+		ImagePath: "../pictures/60168783_p0.png",
+		ImageData: "deadbeaf",
+		LineColor: [4]int{0, 255, 0, 128},
+		FillColor: [4]int{255, 0, 0, 128},
+	}
+
 	ann := annotation.PolygonAnnotation{
 		Label:  "aaa",
 		Points: []annotation.Point{197, 210, 411, 187, 247, 323},
