@@ -6,14 +6,14 @@ import "math"
 import "image"
 
 type Annotation struct {
-	Id    int    `bson:"id" json:"id"`
-	Type  string `bson:"type" json:"type"`
-	Label string `bson:"label" json:"label"`
-
+	Id        int    `bson:"id" json:"id"`
+	Type      string `bson:"type" json:"type"`
+	Label     string `bson:"label" json:"label"`
+	CreatedBy string `bson:"createdBy json:"createdBy"`
 	// Exclusive fields
-	Rect    *RectAnnotation    `bson:"rect,omitempty" json:"rect,omitempty"`
-	Point   *PointAnnotation   `bson:"point,omitempty" json:"point,omitempty"`
-	Polygon *PolygonAnnotation `bson:"polygon,omitempty" json:"polygon,omitempty"`
+	Rect      *RectAnnotation    `bson:"rect,omitempty" json:"rect,omitempty"`
+	Point     *PointAnnotation   `bson:"point,omitempty" json:"point,omitempty"`
+	Polygon   *PolygonAnnotation `bson:"polygon,omitempty" json:"polygon,omitempty"`
 }
 
 type AnnotationCollection []Annotation
