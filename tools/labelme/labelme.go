@@ -6,39 +6,52 @@ import (
 	"github.com/linkernetworks/annotation"
 )
 
-type LabelME struct {
-	Shapes    []Shape `json:"shapes"`
-	LineColor [4]int  `json:"line_color"`
-	FillColor [4]int  `json:"fill_color"`
-	ImagePath string  `json:"imagePath"`
-	ImageData string  `json:"imageData"`
+type LabelmeJSON struct {
+	Shapes    []Shape `bson:"shapes" json:"shapes"`
+	LineColor [4]int  `bson:"lineColor" json:"lineColor"`
+	FillColor [4]int  `bson:"fillColor" json:"fillColor"`
+	ImagePath string  `bson:"imagePath" json:"imagePath"`
+	ImageData string  `bson:"imageData" json:"imageData"`
 }
 
 type Shape struct {
-	File      string  `xml:"file,attr"`
-	Label     string  `json:"label"`
-	LineColor *[4]int `json:"line_color"`
-	FillColor *[4]int `json:"fill_color"`
-	Points    [2]int  `json:"points"`
+	Label     string  `bson:"label" json:"label"`
+	LineColor *[4]int `bson:"line_color" json:"line_color"`
+	FillColor *[4]int `bson:"fill_color" json:"fill_color"`
+	Points    []Point `bson:"points" json:"points"`
 }
 
-func NewLabelME(imgPath string, label string, lineColor [4]int, fillColor [4]int, imgData []byte) *LabelME {
-	return &LabelME{
+type Point [2]int
+
+func NewLabelME(imgPath string, imgData []byte) *LabelmeJSON {
+	return &LabelmeJSON{
 		ImagePath: imgPath,
-		LineColor: lineColor,
-		FillColor: fillColor,
 		ImageData: string(imgData),
 	}
 }
 
-func (l *LabelME) AddAnnotation(ann annotation.PolygonAnnotation) {
-	s := Shape{Lebel: ann.Label}
-	for _, v := range ann.Points {
-		s.Points = append(s.Points, []int{})
-	}
+func (l *LabelmeJSON) UpdateColor(lineColor [4]int, fillColor [4]int) {
+	l.LineColor = lineColor
+	l.FillColor = fillColor
+}
+
+func (l *LabelmeJSON) AddShape(s Shape) {
 	l.Shapes = append(l.Shapes, s)
 }
 
-func (l *LabelME) JSON() ([]byte, error) {
+func (l *LabelmeJSON) JSON() ([]byte, error) {
 	return json.MarshalIndent(l, "  ", " ")
+}
+
+func PolygonAnnotationToShape(ann annotation.PolygonAnnotation, lineColor *[4]int, fillColor *[4]int) Shape {
+	s := Shape{
+		Label:     ann.Label,
+		FillColor: fillColor,
+		LineColor: lineColor,
+	}
+	for i := 0; i < len(ann.Points); {
+		s.Points = append(s.Points, [2]int{int(ann.Points[i]), int(ann.Points[i+1])})
+		i = i + 2
+	}
+	return s
 }

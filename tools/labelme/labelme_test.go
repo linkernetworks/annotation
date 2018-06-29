@@ -1,6 +1,12 @@
 package labelme
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+
+	"github.com/linkernetworks/annotation"
+	"github.com/stretchr/testify/assert"
+)
 
 func TestLabelMe(t *testing.T) {
 	expectedJSON := `{
@@ -17,18 +23,6 @@ func TestLabelMe(t *testing.T) {
 			  [
 				411,
 				187
-			  ],
-			  [
-				588,
-				178
-			  ],
-			  [
-				588,
-				428
-			  ],
-			  [
-				347,
-				464
 			  ],
 			  [
 				247,
@@ -49,12 +43,28 @@ func TestLabelMe(t *testing.T) {
 		  0,
 		  128
 		],
-		"imagePath": "../Pictures/60168783_p0.png",
-		"imageData": "deadbeaf",
+		"imagePath": "../pictures/60168783_p0.png",
+		"imageData": "deadbeaf"
 	  }`
 
-	l := NewLabelME("../Pictures/60168783_p0.png", "aaa", [4]int{0, 255, 0, 128}, [4]int{255, 0, 0, 128}, []byte("deadbeaf"))
-	anns := []annotation.PointAnnotation{}
-	anns = append(anns, annotation.PointAnnotation{Label: "aaa", })
-	l.AddAnnotations(anns []annotation.PointAnnotation)
+	l := NewLabelME("../pictures/60168783_p0.png", []byte("deadbeaf"))
+	l.UpdateColor([4]int{0, 255, 0, 128}, [4]int{255, 0, 0, 128})
+	ann := annotation.PolygonAnnotation{
+		Label:  "aaa",
+		Points: []annotation.Point{197, 210, 411, 187, 247, 323},
+	}
+	s := PolygonAnnotationToShape(ann, nil, nil)
+	l.AddShape(s)
+
+	ret, err := l.JSON()
+	assert.NoError(t, err)
+
+	compareLabel := LabelmeJSON{}
+	err = json.Unmarshal([]byte(expectedJSON), &compareLabel)
+	assert.NoError(t, err)
+	compareString, err := json.MarshalIndent(compareLabel, "  ", " ")
+	assert.NoError(t, err)
+	t.Log(string(compareString))
+	t.Log(string(ret))
+	assert.Equal(t, compareString, ret)
 }
