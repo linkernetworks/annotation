@@ -11,9 +11,9 @@ type Annotation struct {
 	Label     string `bson:"label" json:"label"`
 	CreatedBy string `bson:"createdBy" json:"createdBy"`
 	// Exclusive fields
-	Rect      *RectAnnotation    `bson:"rect,omitempty" json:"rect,omitempty"`
-	Point     *PointAnnotation   `bson:"point,omitempty" json:"point,omitempty"`
-	Polygon   *PolygonAnnotation `bson:"polygon,omitempty" json:"polygon,omitempty"`
+	Rect    *RectAnnotation    `bson:"rect,omitempty" json:"rect,omitempty"`
+	Point   *PointAnnotation   `bson:"point,omitempty" json:"point,omitempty"`
+	Polygon *PolygonAnnotation `bson:"polygon,omitempty" json:"polygon,omitempty"`
 }
 
 type AnnotationCollection []Annotation
@@ -36,6 +36,16 @@ func (ac AnnotationCollection) RectAnnotations() []RectAnnotation {
 		}
 	}
 	return rs
+}
+
+func (ac AnnotationCollection) PolygonAnnotations() []PolygonAnnotation {
+	var ps []PolygonAnnotation
+	for _, a := range ac {
+		if a.Polygon != nil {
+			ps = append(ps, *a.Polygon)
+		}
+	}
+	return ps
 }
 
 func FindPointAnnotationRect(label string, annots AnnotationCollection, padding int, image image.Image) RectAnnotation {
