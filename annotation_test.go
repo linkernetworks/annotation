@@ -1,17 +1,16 @@
 package annotation
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAnyRectAnnotationVaild(t *testing.T) {
-	annots := []Annotation{}
-	annots = append(annots, Annotation{})
+	annots := AnnotationCollection{}
 
 	// generate a annotation with a rect should return true
 	var r RectAnnotation
-	var p PointAnnotation
 
 	r.Label = "label"
 	r.X = 5
@@ -19,18 +18,20 @@ func TestAnyRectAnnotationVaild(t *testing.T) {
 	r.Width = 5
 	r.Height = 5
 	annots = append(annots, Annotation{
-		Id:    5,
-		Type:  "test",
-		Rect:  &r,
-		Point: &p,
+		Id:   5,
+		Type: "test",
+		Rect: &r,
 	})
 
-	found := AnyPointAnnotation(annots)
+	found := AnyRectAnnotation(annots)
 	assert.True(t, found, "Annotation has a point")
+	assert.Equal(t, 1, len(annots.RectAnnotations()))
+	assert.Equal(t, 0, len(annots.PointAnnotations()))
+	assert.Equal(t, 0, len(annots.PolygonAnnotations()))
 }
 
 func TestAnyRectAnnotationInVaild(t *testing.T) {
-	annots := []Annotation{}
+	annots := AnnotationCollection{}
 
 	// generate a annotation with no rect should return false
 	annots = append(annots, Annotation{})
@@ -39,11 +40,9 @@ func TestAnyRectAnnotationInVaild(t *testing.T) {
 }
 
 func TestAnyPointAnnotationVaild(t *testing.T) {
-	annots := []Annotation{}
-	annots = append(annots, Annotation{})
+	annots := AnnotationCollection{}
 
 	// generate a annotation with a rect should return true
-	var r RectAnnotation
 	var p PointAnnotation
 
 	p.Label = "label"
@@ -52,16 +51,19 @@ func TestAnyPointAnnotationVaild(t *testing.T) {
 	annots = append(annots, Annotation{
 		Id:    5,
 		Type:  "test",
-		Rect:  &r,
 		Point: &p,
 	})
 
 	found := AnyPointAnnotation(annots)
 	assert.True(t, found, "Annotation has a rect")
+
+	assert.Equal(t, 0, len(annots.RectAnnotations()))
+	assert.Equal(t, 1, len(annots.PointAnnotations()))
+	assert.Equal(t, 0, len(annots.PolygonAnnotations()))
 }
 
-func TestAnyPointAnnotationInvalid(t *testing.T) {
-	annots := []Annotation{}
+func TestAnyPointAnnotationValid(t *testing.T) {
+	annots := AnnotationCollection{}
 
 	// generate a annotation with no point should return false
 	annots = append(annots, Annotation{})
@@ -69,8 +71,30 @@ func TestAnyPointAnnotationInvalid(t *testing.T) {
 	assert.False(t, notFound, "Annotation has no point")
 }
 
+func TestAnyPolygonAnnotationValid(t *testing.T) {
+	annots := AnnotationCollection{}
+
+	// generate a polygon annotation
+	poly := PolygonAnnotation{
+		Label:  "test1",
+		Points: []Point{200, 300},
+	}
+
+	annots = append(annots, Annotation{
+		Id:      1,
+		Type:    "test",
+		Label:   "test label",
+		Polygon: &poly,
+	})
+	found := AnyPolygonAnnotation(annots)
+	assert.True(t, found, "Annotation has polygon")
+	assert.Equal(t, 0, len(annots.RectAnnotations()))
+	assert.Equal(t, 0, len(annots.PointAnnotations()))
+	assert.Equal(t, 1, len(annots.PolygonAnnotations()))
+}
+
 func TestAnyPolygonAnnotationInVaild(t *testing.T) {
-	annots := []Annotation{}
+	annots := AnnotationCollection{}
 
 	// generate a annotation with no rect should return false
 	annots = append(annots, Annotation{})
