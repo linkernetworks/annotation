@@ -10,6 +10,8 @@ type Annotation struct {
 	Type      string `bson:"type" json:"type"`
 	Label     string `bson:"label" json:"label"`
 	CreatedBy string `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
+	Color     string `bson:"color,omitempty" json:"color,omitempty"`
+	Hotkey    string `bson:"hotkey,omitempty" json:"hotkey,omitempty"`
 	// Exclusive fields
 	Rect    *RectAnnotation    `bson:"rect,omitempty" json:"rect,omitempty"`
 	Point   *PointAnnotation   `bson:"point,omitempty" json:"point,omitempty"`
