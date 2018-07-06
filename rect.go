@@ -24,9 +24,9 @@ type RectAnnotation struct {
 	Height int    `bson:"height" json:"height"`
 }
 
-func (ra *RectAnnotation) Rectangle() image.Rectangle {
-	min := image.Point{ra.X, ra.Y}
-	max := image.Point{ra.X + ra.Width, ra.Y + ra.Height}
+func (ra RectAnnotation) Rectangle() image.Rectangle {
+	min := image.Point{Min(ra.X, ra.X+ra.Width), Min(ra.Y, ra.Y+ra.Height)}
+	max := image.Point{Max(ra.X, ra.X+ra.Width), Max(ra.Y, ra.Y+ra.Height)}
 	return image.Rectangle{Min: min, Max: max}
 }
 
