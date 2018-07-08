@@ -43,3 +43,16 @@ func PolygonAnnotationToShape(ann annotation.PolygonAnnotation, lineColor *[4]in
 	}
 	return s
 }
+
+func RectAnnotationToShape(ann annotation.RectAnnotation, lineColor *[4]int, fillColor *[4]int) Shape {
+	s := Shape{
+		Label:     ann.Label,
+		FillColor: fillColor,
+		LineColor: lineColor,
+	}
+	s.Points = append(s.Points, [2]int{ann.X, ann.Y})
+	s.Points = append(s.Points, [2]int{ann.X + ann.Width, ann.Y})
+	s.Points = append(s.Points, [2]int{ann.X + ann.Width, ann.Y + ann.Height})
+	s.Points = append(s.Points, [2]int{ann.X, ann.Y + ann.Height})
+	return s
+}
