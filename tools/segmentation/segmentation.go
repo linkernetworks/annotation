@@ -9,15 +9,13 @@ import (
 	"github.com/llgcode/draw2d/draw2dkit"
 )
 
-var fillColorPicker []color.Color
-
-func init() {
-	fillColorPicker = append(fillColorPicker, color.RGBA{0x7f, 0xff, 0x00, 0xff}) //chartreuse
-	fillColorPicker = append(fillColorPicker, color.RGBA{0x44, 0x44, 0x44, 0xff}) //chartreuse
-	fillColorPicker = append(fillColorPicker, color.RGBA{0xdc, 0x14, 0x3c, 0xff}) //crimson
-	fillColorPicker = append(fillColorPicker, color.RGBA{0xff, 0x00, 0xff, 0xff}) //fuchsia
-	fillColorPicker = append(fillColorPicker, color.RGBA{0xad, 0xff, 0x2f, 0xff}) //greenyellow
-	fillColorPicker = append(fillColorPicker, color.RGBA{0x4b, 0x00, 0x82, 0xff}) //indigo
+var defaultColors []color.Color = []color.Color{
+	color.RGBA{0x7f, 0xff, 0x00, 0xff},
+	color.RGBA{0x44, 0x44, 0x44, 0xff}, //chartreuse
+	color.RGBA{0xdc, 0x14, 0x3c, 0xff}, //crimson
+	color.RGBA{0xff, 0x00, 0xff, 0xff}, //fuchsia
+	color.RGBA{0xad, 0xff, 0x2f, 0xff}, //greenyellow
+	color.RGBA{0x4b, 0x00, 0x82, 0xff}, //indigo
 }
 
 type Point struct {
@@ -28,22 +26,22 @@ type Point struct {
 type Object []Point
 
 type SegmentationImage struct {
-	DestImage    *image.RGBA
-	GraphContext *draw2dimg.GraphicContext
-	Objects      []Object
+	Image   *image.RGBA
+	Context *draw2dimg.GraphicContext
+	Objects []Object
 }
 
 func NewSegmentationImage(img image.Image) *SegmentationImage {
 	s := new(SegmentationImage)
-	s.DestImage = image.NewRGBA(image.Rect(0, 0, img.Bounds().Dx(), img.Bounds().Dy()))
-	s.GraphContext = draw2dimg.NewGraphicContext(s.DestImage)
+	s.Image = image.NewRGBA(image.Rect(0, 0, img.Bounds().Dx(), img.Bounds().Dy()))
+	s.Context = draw2dimg.NewGraphicContext(s.Image)
 
 	//Black as base image
-	s.GraphContext.SetFillColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
-	draw2dkit.Rectangle(s.GraphContext, 0, 0, float64(img.Bounds().Dx()), float64(img.Bounds().Dy()))
-	s.GraphContext.Fill()
+	s.Context.SetFillColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
+	draw2dkit.Rectangle(s.Context, 0, 0, float64(img.Bounds().Dx()), float64(img.Bounds().Dy()))
+	s.Context.Fill()
 
-	s.GraphContext.SetLineWidth(5)
+	s.Context.SetLineWidth(5)
 	return s
 }
 
@@ -60,41 +58,41 @@ func (s *SegmentationImage) AddPolygonAnnotation(polygon annotation.PolygonAnnot
 // Draw all objects with the same color.
 func (s *SegmentationImage) DrawSegmentationClassImage(file string) error {
 	s.drawObjects(s.Objects, false)
-	return draw2dimg.SaveToPngFile(file, s.DestImage)
+	return draw2dimg.SaveToPngFile(file, s.Image)
 }
 
 // Draw all objects with the different colors.
 func (s *SegmentationImage) DrawSegmentationLabelImage(file string) error {
 	s.drawObjects(s.Objects, true)
-	return draw2dimg.SaveToPngFile(file, s.DestImage)
+	return draw2dimg.SaveToPngFile(file, s.Image)
 }
 
 func (s *SegmentationImage) drawObjects(objs []Object, separatedObj bool) {
-	setGraphColor(s.GraphContext, 0)
+	pickColor(s.Context, 0)
 	for i, obj := range objs {
-		s.GraphContext.BeginPath() // Initialize a new path
+		s.Context.BeginPath() // Initialize a new path
 		for j, pt := range obj {
 			if j == 0 {
-				s.GraphContext.MoveTo(pt.X, pt.Y)
+				s.Context.MoveTo(pt.X, pt.Y)
 			} else {
-				s.GraphContext.LineTo(pt.X, pt.Y)
+				s.Context.LineTo(pt.X, pt.Y)
 			}
 		}
 		//draw line to first point to close object
-		s.GraphContext.LineTo(obj[0].X, obj[0].Y)
-		s.GraphContext.Close()
+		s.Context.LineTo(obj[0].X, obj[0].Y)
+		s.Context.Close()
 		if separatedObj {
-			if i >= len(fillColorPicker) {
-				i = (i % len(fillColorPicker))
+			if i >= len(defaultColors) {
+				i = (i % len(defaultColors))
 			}
-			setGraphColor(s.GraphContext, i)
+			pickColor(s.Context, i)
 		}
-		s.GraphContext.FillStroke()
+		s.Context.FillStroke()
 	}
 }
 
-// set color with color preset table
-func setGraphColor(gc *draw2dimg.GraphicContext, index int) {
-	gc.SetStrokeColor(fillColorPicker[index])
-	gc.SetFillColor(fillColorPicker[index])
+// pick color with color preset table
+func pickColor(gc *draw2dimg.GraphicContext, index int) {
+	gc.SetStrokeColor(defaultColors[index])
+	gc.SetFillColor(defaultColors[index])
 }
