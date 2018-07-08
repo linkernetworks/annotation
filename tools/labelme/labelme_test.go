@@ -146,3 +146,76 @@ func TestLabelMeRect(t *testing.T) {
 	t.Log(string(ret))
 	assert.Equal(t, compareString, ret)
 }
+
+func TestLabelMeRectNagtiveHeight(t *testing.T) {
+	expectedJSON := `{
+		"shapes": [
+		  {
+			"label": "aaa",
+			"line_color": null,
+			"fill_color": null,
+			"points": [
+			  [
+				150,
+				150
+			  ],
+			  [
+				100,
+				150
+			  ],
+			  [
+				100,
+				100
+			  ],
+			  [
+				150,
+				100
+			  ]
+			]
+		  }
+		],
+		"lineColor": [
+		  0,
+		  255,
+		  0,
+		  128
+		],
+		"fillColor": [
+		  255,
+		  0,
+		  0,
+		  128
+		],
+		"imagePath": "../pictures/60168783_p0.png",
+		"imageData": "deadbeaf"
+	  }`
+
+	l := &LabelmeJSON{
+		ImagePath: "../pictures/60168783_p0.png",
+		ImageData: "deadbeaf",
+		LineColor: [4]int{0, 255, 0, 128},
+		FillColor: [4]int{255, 0, 0, 128},
+	}
+
+	ann := annotation.RectAnnotation{
+		Label:  "aaa",
+		X:      150,
+		Y:      150,
+		Width:  -50,
+		Height: -50,
+	}
+	s := RectAnnotationToShape(ann, nil, nil)
+	l.AddShape(s)
+
+	ret, err := l.JSON()
+	assert.NoError(t, err)
+
+	compareLabel := LabelmeJSON{}
+	err = json.Unmarshal([]byte(expectedJSON), &compareLabel)
+	assert.NoError(t, err)
+	compareString, err := json.MarshalIndent(compareLabel, "  ", " ")
+	assert.NoError(t, err)
+	t.Log(string(compareString))
+	t.Log(string(ret))
+	assert.Equal(t, compareString, ret)
+}
