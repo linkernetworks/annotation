@@ -8,45 +8,87 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLabelMe(t *testing.T) {
-	expectedJSON := `{
-		"shapes": [
-		  {
-			"label": "aaa",
-			"line_color": null,
-			"fill_color": null,
-			"points": [
-			  [
-				197,
-				210
-			  ],
-			  [
-				411,
-				187
-			  ],
-			  [
-				247,
-				323
-			  ]
+const expectedRectJSON string = `{
+	"shapes": [
+		{
+		"label": "aaa",
+		"line_color": null,
+		"fill_color": null,
+		"points": [
+			[
+			100,
+			100
+			],
+			[
+			150,
+			100
+			],
+			[
+			150,
+			150
+			],
+			[
+			100,
+			150
 			]
-		  }
-		],
-		"lineColor": [
-		  0,
-		  255,
-		  0,
-		  128
-		],
-		"fillColor": [
-		  255,
-		  0,
-		  0,
-		  128
-		],
-		"imagePath": "../pictures/60168783_p0.png",
-		"imageData": "deadbeaf"
-	  }`
+		]
+		}
+	],
+	"lineColor": [
+		0,
+		255,
+		0,
+		128
+	],
+	"fillColor": [
+		255,
+		0,
+		0,
+		128
+	],
+	"imagePath": "../pictures/60168783_p0.png",
+	"imageData": "deadbeaf"
+	}`
 
+const expectedJSON string = `{
+	"shapes": [
+		{
+		"label": "aaa",
+		"line_color": null,
+		"fill_color": null,
+		"points": [
+			[
+			197,
+			210
+			],
+			[
+			411,
+			187
+			],
+			[
+			247,
+			323
+			]
+		]
+		}
+	],
+	"lineColor": [
+		0,
+		255,
+		0,
+		128
+	],
+	"fillColor": [
+		255,
+		0,
+		0,
+		128
+	],
+	"imagePath": "../pictures/60168783_p0.png",
+	"imageData": "deadbeaf"
+	}`
+
+func TestLabelMe(t *testing.T) {
 	l := &LabelmeJSON{
 		ImagePath: "../pictures/60168783_p0.png",
 		ImageData: "deadbeaf",
@@ -75,48 +117,6 @@ func TestLabelMe(t *testing.T) {
 }
 
 func TestLabelMeRect(t *testing.T) {
-	expectedJSON := `{
-		"shapes": [
-		  {
-			"label": "aaa",
-			"line_color": null,
-			"fill_color": null,
-			"points": [
-			  [
-				100,
-				100
-			  ],
-			  [
-				150,
-				100
-			  ],
-			  [
-				150,
-				150
-			  ],
-			  [
-				100,
-				150
-			  ]
-			]
-		  }
-		],
-		"lineColor": [
-		  0,
-		  255,
-		  0,
-		  128
-		],
-		"fillColor": [
-		  255,
-		  0,
-		  0,
-		  128
-		],
-		"imagePath": "../pictures/60168783_p0.png",
-		"imageData": "deadbeaf"
-	  }`
-
 	l := &LabelmeJSON{
 		ImagePath: "../pictures/60168783_p0.png",
 		ImageData: "deadbeaf",
@@ -138,7 +138,7 @@ func TestLabelMeRect(t *testing.T) {
 	assert.NoError(t, err)
 
 	compareLabel := LabelmeJSON{}
-	err = json.Unmarshal([]byte(expectedJSON), &compareLabel)
+	err = json.Unmarshal([]byte(expectedRectJSON), &compareLabel)
 	assert.NoError(t, err)
 	compareString, err := json.MarshalIndent(compareLabel, "  ", " ")
 	assert.NoError(t, err)
@@ -147,7 +147,7 @@ func TestLabelMeRect(t *testing.T) {
 	assert.Equal(t, compareString, ret)
 }
 
-func TestLabelMeRectNagtiveHeight(t *testing.T) {
+func TestLabelMeRectNegativeHeight(t *testing.T) {
 	expectedJSON := `{
 		"shapes": [
 		  {
@@ -240,4 +240,66 @@ func TestColorToInt(t *testing.T) {
 	expect = [4]int{0, 0, 0, 0}
 	ans = colorStringToIntArray("#d0021ba")
 	assert.Equal(t, expect, ans)
+}
+
+func TestInvalidShape(t *testing.T) {
+	l := &LabelmeJSON{
+		ImagePath: "../pictures/60168783_p0.png",
+		ImageData: "deadbeaf",
+		LineColor: [4]int{0, 255, 0, 128},
+		FillColor: [4]int{255, 0, 0, 128},
+	}
+
+	//invalid: point
+	ann := annotation.PolygonAnnotation{
+		Label:  "aaa",
+		Points: []annotation.Point{197, 210},
+	}
+	s := PolygonAnnotationToShape(ann, nil, nil)
+	l.AddShape(s)
+	assert.Equal(t, 0, len(l.Shapes))
+
+	//invalid: line
+	ann = annotation.PolygonAnnotation{
+		Label:  "bbb",
+		Points: []annotation.Point{197, 210, 411, 187},
+	}
+	s = PolygonAnnotationToShape(ann, nil, nil)
+	l.AddShape(s)
+	assert.Equal(t, 0, len(l.Shapes))
+
+	//valid: three points
+	ann = annotation.PolygonAnnotation{
+		Label:  "ccc",
+		Points: []annotation.Point{197, 210, 411, 187, 400, 100},
+	}
+	s = PolygonAnnotationToShape(ann, nil, nil)
+	l.AddShape(s)
+	assert.Equal(t, 1, len(l.Shapes))
+}
+
+func TestLabelMeColorString(t *testing.T) {
+	l := &LabelmeJSON{
+		ImagePath: "../pictures/60168783_p0.png",
+		ImageData: "deadbeaf",
+	}
+
+	ann := annotation.PolygonAnnotation{
+		Label:  "aaa",
+		Points: []annotation.Point{197, 210, 411, 187, 247, 323},
+	}
+	s := PolygonAnnotationToShapeWithColorString(ann, "#00FF0080", "#FF000080")
+	l.AddShape(s)
+
+	ret, err := l.JSON()
+	assert.NoError(t, err)
+
+	compareLabel := LabelmeJSON{}
+	err = json.Unmarshal([]byte(expectedJSON), &compareLabel)
+	assert.NoError(t, err)
+	compareString, err := json.MarshalIndent(compareLabel, "  ", " ")
+	assert.NoError(t, err)
+	t.Log(string(compareString))
+	t.Log(string(ret))
+	assert.Equal(t, compareString, ret)
 }

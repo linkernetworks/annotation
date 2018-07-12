@@ -27,7 +27,21 @@ type Shape struct {
 type Point [2]int
 
 func (l *LabelmeJSON) AddShape(s Shape) {
-	l.Shapes = append(l.Shapes, s)
+	// Labelme spec not allow point or line (two points) input shape.
+	// We will skip it.
+	if len(s.Points) > 2 {
+		if s.FillColor != nil {
+			l.FillColor = *s.FillColor
+			s.FillColor = nil
+		}
+
+		if s.LineColor != nil {
+			l.LineColor = *s.LineColor
+			s.LineColor = nil
+		}
+		l.Shapes = append(l.Shapes, s)
+	}
+
 }
 
 func (l *LabelmeJSON) JSON() ([]byte, error) {
