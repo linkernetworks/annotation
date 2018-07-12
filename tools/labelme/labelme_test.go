@@ -219,3 +219,25 @@ func TestLabelMeRectNagtiveHeight(t *testing.T) {
 	t.Log(string(ret))
 	assert.Equal(t, compareString, ret)
 }
+
+func TestColorToInt(t *testing.T) {
+	// "#D0021B" only RGB
+	expect := [4]int{208, 2, 27, 0}
+	ans := colorStringToIntArray("#D0021B")
+	assert.Equal(t, expect, ans)
+
+	// "#D0021B0A" include RGBA
+	expect = [4]int{208, 2, 27, 10}
+	ans = colorStringToIntArray("#D0021B0A")
+	assert.Equal(t, expect, ans)
+
+	// low case: RGBA lower case
+	expect = [4]int{208, 2, 27, 10}
+	ans = colorStringToIntArray("#d0021b0a")
+	assert.Equal(t, expect, ans)
+
+	// odd-digit hexadecimal will return empty
+	expect = [4]int{0, 0, 0, 0}
+	ans = colorStringToIntArray("#d0021ba")
+	assert.Equal(t, expect, ans)
+}
