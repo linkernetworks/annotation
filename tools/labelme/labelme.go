@@ -1,7 +1,10 @@
 package labelme
 
 import (
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"log"
 
 	"github.com/linkernetworks/annotation"
 )
@@ -24,11 +27,31 @@ type Shape struct {
 type Point [2]int
 
 func (l *LabelmeJSON) AddShape(s Shape) {
-	l.Shapes = append(l.Shapes, s)
+	// Labelme spec not allow point or line (two points) input shape.
+	// We will skip it.
+	if len(s.Points) > 2 {
+		if s.FillColor != nil {
+			l.FillColor = *s.FillColor
+			s.FillColor = nil
+		}
+
+		if s.LineColor != nil {
+			l.LineColor = *s.LineColor
+			s.LineColor = nil
+		}
+		l.Shapes = append(l.Shapes, s)
+	}
+
 }
 
 func (l *LabelmeJSON) JSON() ([]byte, error) {
 	return json.MarshalIndent(l, "  ", " ")
+}
+
+func PolygonAnnotationToShapeWithColorString(ann annotation.PolygonAnnotation, lineColor string, fillColor string) Shape {
+	line := colorStringToIntArray(lineColor)
+	fill := colorStringToIntArray(fillColor)
+	return PolygonAnnotationToShape(ann, &line, &fill)
 }
 
 func PolygonAnnotationToShape(ann annotation.PolygonAnnotation, lineColor *[4]int, fillColor *[4]int) Shape {
@@ -44,6 +67,12 @@ func PolygonAnnotationToShape(ann annotation.PolygonAnnotation, lineColor *[4]in
 	return s
 }
 
+func RectAnnotationToShapeWithColorString(ann annotation.RectAnnotation, lineColor string, fillColor string) Shape {
+	line := colorStringToIntArray(lineColor)
+	fill := colorStringToIntArray(fillColor)
+	return RectAnnotationToShape(ann, &line, &fill)
+}
+
 func RectAnnotationToShape(ann annotation.RectAnnotation, lineColor *[4]int, fillColor *[4]int) Shape {
 	s := Shape{
 		Label:     ann.Label,
@@ -55,4 +84,19 @@ func RectAnnotationToShape(ann annotation.RectAnnotation, lineColor *[4]int, fil
 	s.Points = append(s.Points, [2]int{ann.X + ann.Width, ann.Y + ann.Height})
 	s.Points = append(s.Points, [2]int{ann.X, ann.Y + ann.Height})
 	return s
+}
+
+func colorStringToIntArray(s string) [4]int {
+	var ret [4]int
+	data, err := hex.DecodeString(s[1:])
+	if err != nil {
+		log.Printf("colorStringToIntArray: %v\n", err)
+		return ret
+	}
+	for k, v := range data {
+		fmt.Printf("% d\n", v)
+		ret[k] = int(v)
+	}
+
+	return ret
 }
