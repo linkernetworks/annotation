@@ -3,8 +3,6 @@ package labelme
 import (
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"log"
 
 	"github.com/linkernetworks/annotation"
 )
@@ -49,8 +47,8 @@ func (l *LabelmeJSON) JSON() ([]byte, error) {
 }
 
 func PolygonAnnotationToShapeWithColorString(ann annotation.PolygonAnnotation, lineColor string, fillColor string) Shape {
-	line := colorStringToIntArray(lineColor)
-	fill := colorStringToIntArray(fillColor)
+	line := parseRGBAHexColor(lineColor)
+	fill := parseRGBAHexColor(fillColor)
 	return PolygonAnnotationToShape(ann, &line, &fill)
 }
 
@@ -68,8 +66,8 @@ func PolygonAnnotationToShape(ann annotation.PolygonAnnotation, lineColor *[4]in
 }
 
 func RectAnnotationToShapeWithColorString(ann annotation.RectAnnotation, lineColor string, fillColor string) Shape {
-	line := colorStringToIntArray(lineColor)
-	fill := colorStringToIntArray(fillColor)
+	line := parseRGBAHexColor(lineColor)
+	fill := parseRGBAHexColor(fillColor)
 	return RectAnnotationToShape(ann, &line, &fill)
 }
 
@@ -86,15 +84,13 @@ func RectAnnotationToShape(ann annotation.RectAnnotation, lineColor *[4]int, fil
 	return s
 }
 
-func colorStringToIntArray(s string) [4]int {
+func parseRGBAHexColor(s string) [4]int {
 	var ret [4]int
 	data, err := hex.DecodeString(s[1:])
 	if err != nil {
-		log.Printf("colorStringToIntArray: %v\n", err)
 		return ret
 	}
 	for k, v := range data {
-		fmt.Printf("% d\n", v)
 		ret[k] = int(v)
 	}
 
