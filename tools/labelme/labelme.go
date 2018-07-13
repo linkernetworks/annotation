@@ -86,6 +86,9 @@ func RectAnnotationToShape(ann annotation.RectAnnotation, lineColor *[4]int, fil
 
 func parseRGBAHexColor(s string) [4]int {
 	var ret [4]int
+	if len(s) == 0 {
+		return ret
+	}
 	data, err := hex.DecodeString(s[1:])
 	if err != nil {
 		return ret
