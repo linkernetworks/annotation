@@ -240,6 +240,16 @@ func TestColorToInt(t *testing.T) {
 	expect = [4]int{0, 0, 0, 0}
 	ans = parseRGBAHexColor("#d0021ba")
 	assert.Equal(t, expect, ans)
+
+	// "" handle empty string
+	expect = [4]int{0, 0, 0, 0}
+	ans = parseRGBAHexColor("")
+	assert.Equal(t, expect, ans)
+
+	// "" handle invalid string
+	expect = [4]int{0, 0, 0, 0}
+	ans = parseRGBAHexColor("axmsbs")
+	assert.Equal(t, expect, ans)
 }
 
 func TestInvalidShape(t *testing.T) {
