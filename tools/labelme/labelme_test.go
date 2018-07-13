@@ -223,22 +223,22 @@ func TestLabelMeRectNegativeHeight(t *testing.T) {
 func TestColorToInt(t *testing.T) {
 	// "#D0021B" only RGB
 	expect := [4]int{208, 2, 27, 0}
-	ans := colorStringToIntArray("#D0021B")
+	ans := parseRGBAHexColor("#D0021B")
 	assert.Equal(t, expect, ans)
 
 	// "#D0021B0A" include RGBA
 	expect = [4]int{208, 2, 27, 10}
-	ans = colorStringToIntArray("#D0021B0A")
+	ans = parseRGBAHexColor("#D0021B0A")
 	assert.Equal(t, expect, ans)
 
 	// low case: RGBA lower case
 	expect = [4]int{208, 2, 27, 10}
-	ans = colorStringToIntArray("#d0021b0a")
+	ans = parseRGBAHexColor("#d0021b0a")
 	assert.Equal(t, expect, ans)
 
 	// odd-digit hexadecimal will return empty
 	expect = [4]int{0, 0, 0, 0}
-	ans = colorStringToIntArray("#d0021ba")
+	ans = parseRGBAHexColor("#d0021ba")
 	assert.Equal(t, expect, ans)
 }
 
