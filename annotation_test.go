@@ -20,6 +20,7 @@ func TestAnyRectAnnotationVaild(t *testing.T) {
 	annots = append(annots, Annotation{
 		Id:   5,
 		Type: "test",
+		Automated: true,
 		Rect: &r,
 	})
 
@@ -51,6 +52,7 @@ func TestAnyPointAnnotationVaild(t *testing.T) {
 	annots = append(annots, Annotation{
 		Id:    5,
 		Type:  "test",
+		Automated: true,
 		Point: &p,
 	})
 
@@ -84,6 +86,7 @@ func TestAnyPolygonAnnotationValid(t *testing.T) {
 		Id:      1,
 		Type:    "test",
 		Label:   "test label",
+		Automated: true,
 		Polygon: &poly,
 	})
 	found := AnyPolygonAnnotation(annots)
