@@ -25,6 +25,9 @@ func (ac AnnotationCollection) PointAnnotations() []PointAnnotation {
 	var ps []PointAnnotation
 	for _, a := range ac {
 		if a.Point != nil {
+			if len(a.Point.Label) == 0 {
+				a.Point.Label = a.Label
+			}
 			ps = append(ps, *a.Point)
 		}
 	}
@@ -35,6 +38,9 @@ func (ac AnnotationCollection) RectAnnotations() []RectAnnotation {
 	var rs []RectAnnotation
 	for _, a := range ac {
 		if a.Rect != nil {
+			if len(a.Rect.Label) == 0 {
+				a.Rect.Label = a.Label
+			}
 			rs = append(rs, *a.Rect)
 		}
 	}
@@ -45,6 +51,9 @@ func (ac AnnotationCollection) PolygonAnnotations() []PolygonAnnotation {
 	var ps []PolygonAnnotation
 	for _, a := range ac {
 		if a.Polygon != nil {
+			if len(a.Polygon.Label) == 0 {
+				a.Polygon.Label = a.Label
+			}
 			ps = append(ps, *a.Polygon)
 		}
 	}
@@ -80,11 +89,13 @@ func PointToAnnotation(points []pts.Point) []Annotation {
 	var annotations []Annotation
 	index := 0
 	for _, v := range points {
+		var label = strconv.Itoa(index)
 		annotations = append(annotations, Annotation{
-			Id:   index,
-			Type: "point",
+			Id:    index,
+			Type:  "point",
+			Label: label,
 			Point: &PointAnnotation{
-				Label: strconv.Itoa(index),
+				Label: label,
 				X:     v.X,
 				Y:     v.Y,
 			},
